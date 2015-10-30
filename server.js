@@ -19,6 +19,7 @@ http.createServer(function(req, res) {
 			break;
 		default: 
 			res.writeHead(404);
+			res.end();
 			break;
 	}
 
