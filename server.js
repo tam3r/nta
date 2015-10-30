@@ -1,6 +1,6 @@
 var http = require('http');
 
-var port = 1337;
+var port = process.env.PORT || 1337;
 
 http.createServer(function(req, res) {
 	var body = "<html><body><h1 style='color: red'>Hello world</h1></body></html>"
