@@ -1,0 +1,24 @@
+{
+  "name": "nta",
+  "version": "1.0.0",
+  "description": "nodetestapp",
+  "main": "server.js",
+  "dependencies": {
+    "xml2json": "^0.9.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tam3r/nta.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tam3r/nta/issues"
+  },
+  "homepage": "https://github.com/tam3r/nta"
+}
