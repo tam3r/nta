@@ -2,7 +2,7 @@ var http = require('http');
 
 var port = process.env.PORT || 1337;
 
-var parser = require('xml2json');
+var parser = require('./node_modules/xml2json');
  
 var xml = "<foo>bar</foo>";
 var json = parser.toJson(xml); //returns a string containing the JSON structure by default 
