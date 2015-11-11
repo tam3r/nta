@@ -26,7 +26,7 @@ http.createServer(function(req, res) {
 			break;
 		case "/app/feed":
 			res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-			res.end("{data:" + JSON.stringify(yandexSportFeed.data) + "}");
+			res.end("{\"data\":" + JSON.stringify(yandexSportFeed.data) + "}");
 			break;
 		default: 
 			res.writeHead(404, {'content-Type': 'text/html'});
