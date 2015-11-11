@@ -6,8 +6,6 @@ var port = process.env.PORT || 1337;
 
 var yandexSportFeed = new KTGetXMLData('http://news.yandex.ru/sport.rss');
 
-//yandexSportFeed.getData();
-
 setInterval(function() {yandexSportFeed.getData(); console.log("renewed")}, 500000)
 
 http.createServer(function(req, res) {
@@ -29,7 +27,8 @@ http.createServer(function(req, res) {
 			break;
 		case "/app/feed":
 			res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-			resString = wrapper ? wrapper + "({\"data\":" + JSON.stringify(yandexSportFeed.data) + "})" : "{\"data\":" + JSON.stringify(yandexSportFeed.data) + "}";
+			resString = wrapper ? wrapper + "({\"data\":" + JSON.stringify(yandexSportFeed.data) + "})" 
+								: "{\"data\":" + JSON.stringify(yandexSportFeed.data) + "}";
 			res.end(resString);
 			break;
 		default: 
