@@ -2,10 +2,10 @@ var http = require('http');
 
 var port = process.env.PORT || 1337;
 
-var parser = require('./node_modules/xml2json');
+//var parser = require('./node_modules/xml2json');
  
 var xml = "<foo>bar</foo>";
-var json = parser.toJson(xml); //returns a string containing the JSON structure by default 
+//var json = parser.toJson(xml); //returns a string containing the JSON structure by default 
 
 http.createServer(function(req, res) {
 	var body = "<html><body><h1 style='color: red'>Hello world</h1></body></html>"
@@ -24,7 +24,7 @@ http.createServer(function(req, res) {
 			break;
 		default: 
 			res.writeHead(200, {'content-Type': 'application/json'});
-			res.end(json);
+			res.end();
 			break;
 	}
 
