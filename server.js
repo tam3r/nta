@@ -3,7 +3,6 @@ var http = require('http');
 var port = process.env.PORT || 1337;
 
 var parseString = require('xml2js').parseString;
-var xml = "<root>Hello xml2js!</root>"
 
 http.createServer(function(req, res) {
 	var body = "<html><body><h1 style='color: red'>Hello world</h1></body></html>"
@@ -22,8 +21,9 @@ http.createServer(function(req, res) {
 			break;
 		default: 
 			res.writeHead(200, {'content-Type': 'application/json'});
+			var xml = "<root>Hello xml2js!</root>"
 			parseString(xml, function (err, result) {
-				res.end(result);
+				res.end(JSON.stringify(result));
 			});
 			break;
 	}
