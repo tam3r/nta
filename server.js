@@ -27,7 +27,7 @@ http.createServer(function(req, res) {
 					res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
 					parseString(body, {explicitArray: false, ignoreAttrs: true}, 
 						function (err, result) {
-							outJSON = JSON.stringify({"data": result.rss.channel.item[0]});
+							outJSON = JSON.stringify({"data": result.rss.channel.item});
 							res.end(outJSON);
 						}
 					);
