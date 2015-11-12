@@ -6,7 +6,7 @@ var port = process.env.PORT || 1337;
 
 var yandexSportFeed = new KTGetXMLData('http://news.yandex.ru/sport.rss');
 
-setInterval(function() {yandexSportFeed.getData(); console.log("renewed")}, 500000)
+setInterval(function() {yandexSportFeed.getData(); console.log("renewed")}, 600000)
 
 http.createServer(function(req, res) {
 	var body = "<html><body><h1 style='color: red'>Hello world</h1></body></html>"
