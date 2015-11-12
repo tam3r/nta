@@ -26,6 +26,7 @@ function KTGetXMLData(source) {
 	this.source = source;
 	this.data = {};
 	processData(this);
+	console.log("created instance");
 }
 
 KTGetXMLData.prototype.getData = function(callback) {
