@@ -1,6 +1,4 @@
-var http = require('http');
 var KTGetXMLData = require('./utils/yaFeed');
-var url = require('url');
 var app = require('express')();
 
 
