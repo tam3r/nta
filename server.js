@@ -13,7 +13,7 @@ console.log(yandexSportFeed);
 setInterval(function() {yandexSportFeed.getData(); console.log("renewed")}, 10*60*1000)
 
 app.get('/app/feed', function ya_sport(req, res) {
-	res.jsonp(yandexSportFeed.data);
+	res.jsonp({"data": yandexSportFeed.data});
 })
 
 app.listen(port);
