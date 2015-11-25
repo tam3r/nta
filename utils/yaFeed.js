@@ -11,7 +11,7 @@ function compareDates(a, b) {
 function KTGetXMLData(source) {
     this.source = source;
     this.data = [];
-    this.loaded = false;
+    this.hasNews = false;
     processData(this);
     console.log("created instance");
 }
@@ -28,7 +28,7 @@ function processData(obj, callback) {
             parseString(body, {explicitArray: false, ignoreAttrs: true}, 
                 function(err, result) {
                     
-                    obj.loaded = true;
+                    obj.hasNews = true;
                     obj.data = result.rss.channel.item;
                     obj.data.sort(compareDates);
                     obj.data.forEach(function normalise(item) {
