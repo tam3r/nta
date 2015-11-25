@@ -7,10 +7,11 @@ var app = express();
 var port = process.env.PORT || 1337; 
 
 var yandexSportFeed = new KTGetXMLData('http://news.yandex.ru/sport.rss');
+myScoreData.getData();
 
 setInterval(function renewData() {
   yandexSportFeed.getData();
-  
+  myScoreData.getData();
 }, 10*60*1000)
 
 app.get('/app/news', function ya_sport(req, res) {
@@ -20,8 +21,6 @@ app.get('/app/news', function ya_sport(req, res) {
 app.get('/app/live', function live_data(req, res) {
   res.jsonp({"data": myScoreData.liveData});
 })
-
-myScoreData.getData();
 
 app.listen(port);
 
