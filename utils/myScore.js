@@ -82,7 +82,9 @@ function processData(rawData) {
 		var propName = keyDict[rawName];
 		var propValue = rawValue;
 		var target = out[currentCountry][currentTournament][currentEvent];
+    
 		target[propName] = propValue;
+    
 		if (propName === "status") 
 			target.statusTxt = statDict[rawValue];
 	}

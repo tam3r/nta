@@ -34,7 +34,8 @@ function processData(obj, callback) {
                     obj.data.forEach(function normalise(item) {
                         var dateSrc = new Date(item.pubDate);
                         item.pubDateStr = dateSrc.getDate() + ' ' + monthE2R[dateSrc.getMonth()];
-                        item.pubTimeStr = dateSrc.toTimeString().slice(0, 5);
+                        var minutes = '0' + dateSrc.getMinutes();
+                        item.pubTimeStr = dateSrc.getHours() + ':' + minutes.slice(-2);
                 
                         if (currentDate !== item.pubDateStr) {
                             currentDate = item.pubDateStr;
