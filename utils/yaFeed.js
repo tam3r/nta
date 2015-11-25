@@ -39,7 +39,7 @@ function processData(obj, callback) {
                 }
             );
         } else {
-            obj.data = "Ошибка загрузки новостей\n";
+            obj.data = ["Ошибка загрузки новостей\n"];
         }
         if (typeof callback === "function") callback();
     });
