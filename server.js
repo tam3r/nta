@@ -15,7 +15,7 @@ setInterval(function renewData() {
 }, 1000*60*10)
 
 app.get('/app/news', function ya_sport(req, res) {
-  res.jsonp({"data": yandexSportFeed.data});
+  res.jsonp({"data": yandexSportFeed.data, "loaded": yandexSportFeed.loaded});
 })
 
 app.get('/app/live', function live_data(req, res) {
