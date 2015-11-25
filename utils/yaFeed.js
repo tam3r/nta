@@ -10,7 +10,7 @@ function compareDates(a, b) {
                 
 function KTGetXMLData(source) {
     this.source = source;
-    this.data = "Пожалуйста, обновите страницу\n";
+    this.data = ["Пожалуйста, обновите страницу\n"];
     processData(this);
     console.log("created instance");
 }
