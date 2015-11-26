@@ -68,7 +68,15 @@ var reqOptions = {
   headers: {"X-Fsign":"SW9D1eZo"}
 };
 
-var out = {"noData": true};
+var dataReceived = false;
+var safe = function(source) { //closure
+  var data = {"noData": true};
+  return function(source) {
+    if (typeof source === 'object') data = source;
+    return data;
+  } 
+}
+var out = safe(); //closure instance with captured data
 
 function processData(rawData) {
   var oD = {}; //output
@@ -108,7 +116,7 @@ function processData(rawData) {
 		}
 	})
   
-  out = oD;
+  out(oD); //save processed data to closure instance (out)
 }
 
 function getData() {
@@ -120,5 +128,5 @@ function getData() {
 }
 
 module.exports.getData = getData;
-module.exports.liveData = out;
+module.exports.liveData = out; //function object that returns captured data
 
