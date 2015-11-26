@@ -71,6 +71,7 @@ var reqOptions = {
 var out = {"noData": true};
 
 function processData(rawData) {
+  var oD = {}; //output
 	var currentCountry = "";
 	var currentTournament = "";
 	var currentEvent = 0;
@@ -81,7 +82,7 @@ function processData(rawData) {
 		var rawValue = propStr.slice(4);
 		var propName = keyDict[rawName];
 		var propValue = rawValue;
-		var target = out[currentCountry][currentTournament][currentEvent];
+		var target = oD[currentCountry][currentTournament][currentEvent];
     
 		target[propName] = propValue;
     
@@ -95,17 +96,19 @@ function processData(rawData) {
 			currentCountry = item.slice(5, delimPos);
 			currentTournament = item.slice(delimPos + 1).trimLeft();
 			currentEvent = -1;
-			if (out.hasOwnProperty(currentCountry) === false) {
-				out[currentCountry] = {};
+			if (oD.hasOwnProperty(currentCountry) === false) {
+				oD[currentCountry] = {};
 			}
-			out[currentCountry][currentTournament] = [];
+			oD[currentCountry][currentTournament] = [];
 		} else if (item.match(/~AA/)) {
 			currentEvent++;
-			out[currentCountry][currentTournament].push({});
+			oD[currentCountry][currentTournament].push({});
 		} else {
 			setProp(item);
 		}
 	})
+  
+  out = oD;
 }
 
 function getData() {
