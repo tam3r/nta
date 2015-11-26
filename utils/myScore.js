@@ -68,7 +68,7 @@ var reqOptions = {
   headers: {"X-Fsign":"SW9D1eZo"}
 };
 
-var out = {};
+var out = {"noData": true};
 
 function processData(rawData) {
 	var currentCountry = "";
@@ -108,12 +108,14 @@ function processData(rawData) {
 	})
 }
 
-module.exports.getData = function() {
+function getData() {
     request(reqOptions, function then(error, response, body) {
       if (!error && response.statusCode == 200) {
         processData(body);
       } else console.log(error)
     });
 }
+
+module.exports.getData = getData;
 module.exports.liveData = out;
 
