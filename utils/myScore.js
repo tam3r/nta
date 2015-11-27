@@ -63,11 +63,6 @@ var sportsDict = {
   "volleyball": "12"
 }
 
-var reqOptions = {
-  url: 'http://d.myscore.ru/x/feed/f_1_0_3_ru_1',
-  headers: {"X-Fsign":"SW9D1eZo"}
-};
-
 var dataReceived = false;
 // var safe = function(source) { //closure
 //   var data = {"noData": true};
@@ -121,6 +116,11 @@ function processData(rawData) {
   out.data = oD;
   //out(oD); //save processed data to closure instance (out)
 }
+
+var reqOptions = {
+  url: 'http://d.myscore.ru/x/feed/f_1_0_3_ru_1',
+  headers: {"X-Fsign":"SW9D1eZo"}
+};
 
 function getData() {
     request(reqOptions, function then(error, response, body) {
