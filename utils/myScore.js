@@ -11,7 +11,7 @@ var keyDict = {
   "AH": "awayGoals", 
   "AJ": "redHome", 
   "AK": "redAway",
-  "AM": "comment",  
+  "AM": "comment", 
   "BA": "homeGoals1stPart", 
   "BB": "awayGoals1stPart", 
   "BC": "homeGoals2ndPart", 
@@ -53,7 +53,7 @@ var statDict = {
   "38": "Перерыв (футбол)",
   "46": "Перерыв (хоккей)",
   "54": "Техническое поражение"
-}
+};
 
 var sportsDict = {
   "football": "1",
@@ -61,26 +61,28 @@ var sportsDict = {
   "basketball": "3",
   "hockey": "4",
   "volleyball": "12"
+};
+
+var out = initOut();
+
+function initOut() {
+  var initObj = {};
+  Object.keys(sportsDict).forEach(function setV(item) {
+    initObj[item] = {"noData": true};
+  });
+  return initObj;
 }
 
-var dataReceived = false;
-// var safe = function(source) { //closure
-//   var data = {"noData": true};
-//   return function(source) {
-//     if (typeof source === 'object') data = source;
-//     return data;
-//   } 
-// }
-// var out = safe(); //closure instance with captured data
 
-var out = {data: {"noData": true}};
-
-function processData(rawData) {
+function processData(rawData, sportName) {
   var oD = {}; //output
 	var currentCountry = "";
 	var currentTournament = "";
 	var currentEvent = 0;
-	var separatedData = rawData.match(/¬(~ZA|~AA|A[C-HJKM]|B[A-L]|W[A-C])÷(.+?)(?=¬)/g);
+	var splitData = rawData.match(/¬(~ZA|~AA|A[C-HJKM]|B[A-L]|W[A-C])÷(.+?)(?=¬)/g);
+  
+	splitData.forEach(propr2Json);
+  out[sportName] = oD;
 	
 	function setProp(propStr) {
 		var rawName = propStr.slice(1, 3);
@@ -94,42 +96,46 @@ function processData(rawData) {
 		if (propName === "status") 
 			target.statusTxt = statDict[rawValue];
 	}
-	
-	separatedData.forEach(function propr2Json(item) {
-		if (item.match(/~ZA/)) {
+  
+  function propr2Json(item) {
+		if (item.match(/~ZA/)) {  //ZA means new tournament
 			var delimPos = item.indexOf(":");
 			currentCountry = item.slice(5, delimPos);
 			currentTournament = item.slice(delimPos + 1).trimLeft();
 			currentEvent = -1;
+      
 			if (oD.hasOwnProperty(currentCountry) === false) {
 				oD[currentCountry] = {};
 			}
 			oD[currentCountry][currentTournament] = [];
-		} else if (item.match(/~AA/)) {
+		} else if (item.match(/~AA/)) { //AA means new event
 			currentEvent++;
 			oD[currentCountry][currentTournament].push({});
 		} else {
 			setProp(item);
 		}
-	})
+	}
+}
+
+
+function getData(sportName) {
+  var reqOptions = {
+    url: 'http://d.myscore.ru/x/feed/f_' + sportsDict[sportName] + '_0_3_ru_1',
+    headers: {"X-Fsign":"SW9D1eZo"}
+  };
   
-  out.data = oD;
-  //out(oD); //save processed data to closure instance (out)
+  request(reqOptions, function then(error, response, body) {
+    if (!error && response.statusCode == 200) {
+      processData(body, sportName);
+    } else console.log(error)
+  });
 }
 
-var reqOptions = {
-  url: 'http://d.myscore.ru/x/feed/f_1_0_3_ru_1',
-  headers: {"X-Fsign":"SW9D1eZo"}
-};
 
-function getData() {
-    request(reqOptions, function then(error, response, body) {
-      if (!error && response.statusCode == 200) {
-        processData(body);
-      } else console.log(error)
-    });
+function getDataAll() {
+  Object.keys(sportsDict).forEach(getData);
 }
 
-module.exports.getData = getData;
-module.exports.liveData = out; //function object that returns captured data
 
+module.exports.getData = getDataAll;
+module.exports.liveData = out; 
