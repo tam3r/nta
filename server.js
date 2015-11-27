@@ -19,7 +19,7 @@ app.get('/app/news', function ya_sport(req, res) {
 })
 
 app.get('/app/live', function live_data(req, res) {
-  res.jsonp(myScoreData.liveData());
+  res.jsonp(myScoreData.liveData.data);
 })
 
 app.listen(port);

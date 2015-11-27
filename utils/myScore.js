@@ -69,14 +69,16 @@ var reqOptions = {
 };
 
 var dataReceived = false;
-var safe = function(source) { //closure
-  var data = {"noData": true};
-  return function(source) {
-    if (typeof source === 'object') data = source;
-    return data;
-  } 
-}
-var out = safe(); //closure instance with captured data
+// var safe = function(source) { //closure
+//   var data = {"noData": true};
+//   return function(source) {
+//     if (typeof source === 'object') data = source;
+//     return data;
+//   } 
+// }
+// var out = safe(); //closure instance with captured data
+
+var out = {data: {"noData": true}};
 
 function processData(rawData) {
   var oD = {}; //output
@@ -116,7 +118,8 @@ function processData(rawData) {
 		}
 	})
   
-  out(oD); //save processed data to closure instance (out)
+  out.data = oD;
+  //out(oD); //save processed data to closure instance (out)
 }
 
 function getData() {
