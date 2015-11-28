@@ -1,5 +1,5 @@
 var KTGetXMLData = require('./utils/yaFeed');
-var myScoreData  = require('./utils/myScore');
+var myScoreData  = require('./utils/mS_getD');
 var express      = require('express');
 var request      = require('request');
 

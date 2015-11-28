@@ -1,12 +1,13 @@
 var parseString = require('xml2js').parseString;
-
 var request = require('request');
+
 
 function compareDates(a, b) {
     var first = new Date(a.pubDate);
     var second = new Date(b.pubDate)
     return second - first;
 }
+   
                 
 function KTGetXMLData(source) {
     this.source = source;
@@ -16,9 +17,11 @@ function KTGetXMLData(source) {
     console.log("created instance");
 }
 
+
 KTGetXMLData.prototype.getData = function(callback) {
     processData(this, callback);
 };
+
 
 function processData(obj, callback) {
     request.get(obj.source, function (error, response, body) {
@@ -46,7 +49,6 @@ function processData(obj, callback) {
         if (typeof callback === "function") callback();
     });
 }
-
 
 
 module.exports = KTGetXMLData;
