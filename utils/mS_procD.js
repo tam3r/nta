@@ -136,7 +136,8 @@ function checkPreviousEvent() {
     var timeToStart = -settings['timeToStart'] * 60 * 1000;
     var timeSinceStart = settings['timeSinceStart'] * 60 * 1000;
     var timeUntilERO = settings['timeUntilERO'] * 60 * 1000;
-    var isLive = (event.status > 10 && event.status < 25);
+    var isLive = (event.status > 10 && event.status < 25) || 
+                 (event.status > 37 && event.status < 47);
     
   //if (startTimeDiff < 0 && startTimeDiff > timeToStart && event.status === "1")
     if ((startTimeDiff < 0 && startTimeDiff < timeToStart && !isLive) ||
