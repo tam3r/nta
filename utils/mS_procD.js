@@ -54,20 +54,32 @@ var statDict = {
     "54": "Техническое поражение"
 };
 
-var oD = {}; //output
-var currentCountry = "";
-var currentTournament = "";
-var currentEvent = 0;
+var settings = {
+    "timeToStart": 30, //minutes until match start to add match to results
+    "timeSinceStart": 180, //minutes after their start ended matches are deleted from results 
+    "timeUntilERO": 5 //minutes after start time match is considered end-result only
+}
+
+var oD; //output
+var currentCountry;
+var currentTournament;
+var currentEvent;
 var currentTime;
 
 
 function processData(rawData, sportName) {
     var splitData = rawData.match(/¬(~ZA|~AA|A[C-HJKM]|B[A-L]|W[A-C])÷(.+?)(?=¬)/g);
     
-    currentTime = (new Date()).getTime();
     oD = {};
+    currentCountry = "";
+    currentTournament = "";
+    currentEvent = 0;
+    currentTime = (new Date()).getTime();
     splitData.forEach(propr2Json);
-    return oD;
+    checkPreviousEvent();
+    checkPreviousTournament();
+    checkCountries();
+    return Object.keys(oD).length == 0 ? {"noData": true} : oD;
 }
 
 
@@ -86,7 +98,8 @@ function setProp(propStr) {
     
 function propr2Json(item) {
     if (item.match(/~ZA/)) {    //ZA means new tournament
- //     checkPreviousEvent();
+        checkPreviousEvent();
+        checkPreviousTournament();
         var delimPos = item.indexOf(":");
         
         currentCountry = item.slice(5, delimPos);
@@ -99,7 +112,7 @@ function propr2Json(item) {
         oD[currentCountry][currentTournament] = [];
         
     } else if (item.match(/~AA/)) { //AA means new event
-     //	checkPreviousEvent();
+       	checkPreviousEvent();
         currentEvent++;
         oD[currentCountry][currentTournament].push({});
         
@@ -111,18 +124,43 @@ function propr2Json(item) {
 
 function checkPreviousEvent() {
     
-    //previous event is deleted if meets one of the following:
-    //1) it started more than 3 hours ago and event has status "3" 
-    //2) start time passed 5 minutes ago and event still has status "1"  
+    //previous event is deleted if not live and meets one of the following:
+    //1) it started more than 3 hours ago 
+    //2) start time was 5 minutes ago   
     //3) starts in more than 30 minutes
-    if (currentCountry === "") return;
+    if (currentEvent === -1 || currentCountry === "") return;
     
-    var eventToCheck = oD[currentCountry][currentTournament][currentEvent];
-    var eventStart = new Date(eventToCheck.startTime)
+    var event = oD[currentCountry][currentTournament][currentEvent];
+    var eventStart = (new Date(event.startTime)).getTime();
+    var startTimeDiff = currentTime - eventStart; 
+    var timeToStart = -settings['timeToStart'] * 60 * 1000;
+    var timeSinceStart = settings['timeSinceStart'] * 60 * 1000;
+    var timeUntilERO = settings['timeUntilERO'] * 60 * 1000;
+    var isLive = (event.status > 10 && event.status < 25);
     
-    //if ()
-    
-    
+  //if (startTimeDiff < 0 && startTimeDiff > timeToStart && event.status === "1")
+    if ((startTimeDiff < 0 && startTimeDiff < timeToStart && !isLive) ||
+        (startTimeDiff > 0 && startTimeDiff > timeUntilERO && !isLive) || 
+        (startTimeDiff > 0 && startTimeDiff > timeSinceStart && !isLive)) {
+            
+        oD[currentCountry][currentTournament].pop();
+        currentEvent--;
+    }
+}
+
+//если матч перенесен, то проблемы
+
+function checkPreviousTournament() {
+    if (currentTournament === "") return;
+    if (oD[currentCountry][currentTournament].length === 0)
+        delete oD[currentCountry][currentTournament];
+}
+
+function checkCountries() {
+    for (country in oD) {
+        if (Object.keys(oD[country]).length === 0)
+            delete oD[country];
+    }
 }
 
 
