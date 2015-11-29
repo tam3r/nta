@@ -79,7 +79,7 @@ function processData(rawData, sportName) {
     checkPreviousEvent();
     checkPreviousTournament();
     checkCountries();
-    return Object.keys(oD).length == 0 ? {"noData": true} : oD;
+    return Object.keys(oD).length == 0 ? {"noActiveMatches": true} : oD;
 }
 
 
