@@ -5,23 +5,23 @@ var keyDict = {
     "AD": "startTime",
     "AE": "homeTeam", 
     "AF": "awayTeam", 
-    "AG": "homeGoals", 
-    "AH": "awayGoals", 
+    "AG": "score", 
+    "AH": "score", 
     "AJ": "redHome", 
     "AK": "redAway",
     "AM": "comment", 
-    "BA": "homeGoals1stPart", 
-    "BB": "awayGoals1stPart", 
-    "BC": "homeGoals2ndPart", 
-    "BD": "awayGoals2ndPart", 
-    "BE": "homeGoals3rdPart", 
-    "BF": "awayGoals3rdPart", 
-    "BG": "homeGoals4thPart", 
-    "BH": "awayGoals4thPart", 
-    "BI": "homeGoals5thPart", 
-    "BJ": "awayGoals5thPart", 
-    "BK": "homeGoals6thPart", 
-    "BL": "awayGoals6thPart",
+    "BA": "scoreParts", 
+    "BB": "scoreParts", 
+    "BC": "scoreParts", 
+    "BD": "scoreParts", 
+    "BE": "scoreParts", 
+    "BF": "scoreParts", 
+    "BG": "scoreParts", 
+    "BH": "scoreParts", 
+    "BI": "scoreParts", 
+    "BJ": "scoreParts", 
+    "BK": "scoreParts", 
+    "BL": "scoreParts",
     "WA": "gamePointsFirst",
     "WB": "gamePointsSecond",
     "WC": "serve"
@@ -65,6 +65,7 @@ var currentCountry;
 var currentTournament;
 var currentEvent;
 var currentTime;
+var matchCount;
 
 
 function processData(rawData, sportName) {
@@ -75,11 +76,16 @@ function processData(rawData, sportName) {
     currentTournament = "";
     currentEvent = 0;
     currentTime = (new Date()).getTime();
+    matchCount = 0;
+    
     splitData.forEach(propr2Json);
-    checkPreviousEvent();
-    checkPreviousTournament();
-    checkCountries();
-    return Object.keys(oD).length == 0 ? {"noActiveMatches": true} : oD;
+    
+    checkPreviousEvent(); //remove last event if necessary
+    checkPreviousTournament(); //remove last tournament if empty
+    checkCountries(); //remove all countries without matches
+    oD.matchCount = matchCount;
+    
+    return oD;
 }
 
 
@@ -89,10 +95,57 @@ function setProp(propStr) {
     var propName = keyDict[rawName];
     var propValue = rawValue;
     var target = oD[currentCountry][currentTournament][currentEvent];
+    
+    if (!target.hasOwnProperty(propName)) 
+        target[propName] = propValue; 
         
-    target[propName] = propValue;    
-    if (propName === "status") target.statusTxt = statDict[rawValue];
-    else if (propName === "startTime") target.startTime *= 1000;
+    switch (propName) {
+        case "status":
+            target.statusTxt = statDict[rawValue];
+            break;
+        case "startTime":        
+            target.startTime *= 1000;
+            break;
+        case "score":
+        case "scoreParts":
+            setScore(rawName, rawValue);
+            break;
+        default:
+    }
+}
+
+
+function whatScore(keyName) { //returns [side] or [side, part], side = "home"/"away", part = 0..6
+    var out = [];
+    var firstLetter = keyName.charAt(0);
+    var secondLetterUnicode = keyName.charCodeAt(1);
+    
+    out[0] = secondLetterUnicode % 2 === 0 ? "away" : "home"; 
+    if (firstLetter === "B") 
+        out[1] = (secondLetterUnicode - 65) >> 1;
+        
+    return out;
+}
+
+
+function setScore(keyName, keyValue) {
+    var props = whatScore(keyName); 
+    var target = oD[currentCountry][currentTournament][currentEvent];
+    
+    if (typeof props[1] === "undefined") {
+        if (typeof target.score !== "object")
+            target.score = {};
+            
+        target.score[props[0]] = keyValue;
+    } else {
+        if (typeof target.scoreParts !== "object") 
+            target.scoreParts = [];
+            
+        if (typeof target.scoreParts[props[1]] === "undefined") 
+            target.scoreParts[props[1]] = {};
+            
+        target.scoreParts[props[1]][props[0]] = keyValue;
+    }
 }
     
     
@@ -114,6 +167,7 @@ function propr2Json(item) {
     } else if (item.match(/~AA/)) { //AA means new event
        	checkPreviousEvent();
         currentEvent++;
+        matchCount++;
         oD[currentCountry][currentTournament].push({});
         
     } else {
@@ -139,13 +193,13 @@ function checkPreviousEvent() {
     var isLive = (event.status > 10 && event.status < 25) || 
                  (event.status > 37 && event.status < 47);
     
-  //if (startTimeDiff < 0 && startTimeDiff > timeToStart && event.status === "1")
     if ((startTimeDiff < 0 && startTimeDiff < timeToStart && !isLive) ||
         (startTimeDiff > 0 && startTimeDiff > timeUntilERO && !isLive) || 
         (startTimeDiff > 0 && startTimeDiff > timeSinceStart && !isLive)) {
             
         oD[currentCountry][currentTournament].pop();
         currentEvent--;
+        matchCount--;
     }
 }
 
