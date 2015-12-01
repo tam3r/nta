@@ -190,7 +190,7 @@ function checkPreviousEvent() {
     var timeToStart = -settings['timeToStart'] * 60 * 1000;
     var timeSinceStart = settings['timeSinceStart'] * 60 * 1000;
     var timeUntilERO = settings['timeUntilERO'] * 60 * 1000;
-    var isLive = (event.status > 10 && event.status < 25) || 
+    var isLive = (event.status > 12 && event.status < 25) || 
                  (event.status > 37 && event.status < 47);
     
     if ((startTimeDiff < 0 && startTimeDiff < timeToStart && !isLive) ||
@@ -212,10 +212,9 @@ function checkPreviousTournament() {
 }
 
 function checkCountries() {
-    for (country in oD) {
+    for (country in oD)
         if (Object.keys(oD[country]).length === 0)
             delete oD[country];
-    }
 }
 
 
