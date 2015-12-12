@@ -78,13 +78,14 @@ function processData(rawData, sportName) {
     currentTime = (new Date()).getTime();
     matchCount = 0;
     
-    splitData.forEach(propr2Json);
+    if (splitData !== null) {    
+        splitData.forEach(propr2Json);
+        checkPreviousEvent(); //remove last event if necessary
+        checkPreviousTournament(); //remove last tournament if empty
+        checkCountries(); //remove all countries without matches
+    } 
     
-    checkPreviousEvent(); //remove last event if necessary
-    checkPreviousTournament(); //remove last tournament if empty
-    checkCountries(); //remove all countries without matches
     oD.matchCount = matchCount;
-    
     return oD;
 }
 
