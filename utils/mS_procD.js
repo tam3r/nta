@@ -105,8 +105,9 @@ function setProp(propStr) {
         case "status":
             target.statusTxt = statDict[rawValue];
             break;
-        case "startTime":        
-            target.startTime *= 1000;
+        case "startTime":  
+        case "statusUpdateTime":      
+            target[propName] *= 1000;
             break;
         case "score":
         case "scoreParts":
