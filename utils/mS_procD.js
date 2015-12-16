@@ -10,6 +10,7 @@ var keyDict = {
     "AJ": "redHome", 
     "AK": "redAway",
     "AM": "comment", 
+    "AO": "statusUpdateTime",
     "BA": "scoreParts", 
     "BB": "scoreParts", 
     "BC": "scoreParts", 
