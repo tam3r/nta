@@ -29,13 +29,15 @@ var keyDict = {
 };
 
 var statDict = {
-    "1": "трансляция не началась (в тч ткр)", 
+    "1": "Трансляция не началась (в тч ткр)", 
     "3": "Завершен",
     "4": "Перенесен",
     "5": "Отменен",
+    "6": "Овертайм",
+    "7": "Буллиты",
     "8": "Завершен (отказ)",
-    "10": "После д.в. (овертайма)",
-    "11": "После с.п. (буллитов)",
+    "10": "После доб времени (овертайма)",
+    "11": "После серии пенальти (буллитов)",
     "12": "Первый тайм",
     "13": "Второй тайм",
     "14": "Первый период",
@@ -44,13 +46,16 @@ var statDict = {
     "17": "Первый сет",
     "18": "Второй сет",
     "19": "Третий сет",
+    "20": "Четвертый сет",
+    "21": "Пятый сет",
     "22": "Первая четверть",
     "23": "Вторая четверть",
     "24": "Третья четверть",
     "25": "Четвертая четверть",
     "36": "Прерван (теннис)",
     "37": "Прерван (футбол)",
-    "38": "Перерыв (футбол)",
+    "38": "Перерыв (футбол, баскетбол)",
+    "43": "Задержка",
     "46": "Перерыв (хоккей)",
     "54": "Техническое поражение"
 };
@@ -184,35 +189,40 @@ function checkPreviousEvent() {
     //previous event is deleted if not live and meets one of the following:
     //1) it started more than 3 hours ago 
     //2) start time was 5 minutes ago   
-    //3) starts in more than 30 minutes
-    if (currentEvent === -1 || currentCountry === "") return;
+    //3) starts in more than 60 minutes
+    if (currentEvent === -1 || currentCountry === "") 
+        return;
     
     var event = oD[currentCountry][currentTournament][currentEvent];
+    var st = event.status;
+    
     var eventStart = (new Date(event.startTime)).getTime();
     var startTimeDiff = currentTime - eventStart; 
-    var timeToStart = -settings['timeToStart'] * 60 * 1000;
+    var timeUntilStart = -settings['timeToStart'] * 60 * 1000;
     var timeSinceStart = settings['timeSinceStart'] * 60 * 1000;
     var timeUntilERO = settings['timeUntilERO'] * 60 * 1000;
-    var isLive = (event.status > 12 && event.status < 25) || 
-                 (event.status > 37 && event.status < 47);
     
-    if ((startTimeDiff < 0 && startTimeDiff < timeToStart && !isLive) ||
-        (startTimeDiff > 0 && startTimeDiff > timeUntilERO && !isLive) || 
-        (startTimeDiff > 0 && startTimeDiff > timeSinceStart && !isLive)) {
-            
+    var notStarted = (st === '1');
+    var isNotLive = !(st === '6' || st === '7' || (st >= 12 && st <= 25));
+    
+    var tooLongUntilStart = (startTimeDiff < 0 && startTimeDiff < timeUntilStart);
+    var endResultOnly = (startTimeDiff > 0 && startTimeDiff > timeUntilERO && notStarted);
+    var notActual = (startTimeDiff > 0 && startTimeDiff > timeSinceStart && isNotLive);
+    
+    if (tooLongUntilStart || endResultOnly || notActual) {
         oD[currentCountry][currentTournament].pop();
         currentEvent--;
         matchCount--;
     }
 }
 
-//если матч перенесен, то проблемы
 
 function checkPreviousTournament() {
     if (currentTournament === "") return;
     if (oD[currentCountry][currentTournament].length === 0)
         delete oD[currentCountry][currentTournament];
 }
+
 
 function checkCountries() {
     for (country in oD)
