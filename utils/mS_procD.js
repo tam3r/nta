@@ -32,11 +32,11 @@ var statDict = {
     "1": "Трансляция не началась (в тч ткр)", 
     "2": "Live",
     "3": "Завершен",
-    "4": "Перенесен",
-    "5": "Отменен",
+    "4": "Матч перенесен",
+    "5": "Матч отменен",
     "6": "Овертайм",
     "7": "Буллиты",
-    "8": "Завершен (отказ)",
+    "8": "Матч завершен (отказ)",
     "10": "После доб времени (овертайма)",
     "11": "После серии пенальти (буллитов)",
     "12": "Первый тайм",
@@ -53,18 +53,18 @@ var statDict = {
     "23": "Вторая четверть",
     "24": "Третья четверть",
     "25": "Четвертая четверть",
-    "36": "Прерван (теннис)",
-    "37": "Прерван (футбол)",
+    "36": "Матч прерван",
+    "37": "Матч прерван",
     "38": "Перерыв (футбол, баскетбол)",
     "43": "Задержка",
-    "46": "Перерыв (хоккей)",
+    "46": "Перерыв (хоккей)", 
     "47": "Тай брейк",
     "54": "Техническое поражение"
 };
 
 var settings = {
-    "timeToStart": 60, //minutes until match start to add a match to results
-    "timeSinceStart": 180, //minutes after their start ended matches are deleted from results 
+    "timeToStart": 160, //minutes until match start to add a match to results
+    "timeSinceStart": 280, //minutes after their start ended matches are deleted from results 
     "timeUntilERO": 5 //minutes after start time a match is considered end-result only
 }
 
