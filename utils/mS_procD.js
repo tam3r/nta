@@ -63,8 +63,8 @@ var statDict = {
 };
 
 var settings = {
-    "timeToStart": 160, //minutes until match start to add a match to results
-    "timeSinceStart": 280, //minutes after their start ended matches are deleted from results 
+    "timeToStart": 60, //minutes until match start to add a match to results
+    "timeSinceStart": 180, //minutes after their start ended matches are deleted from results 
     "timeUntilERO": 5 //minutes after start time a match is considered end-result only
 }
 
