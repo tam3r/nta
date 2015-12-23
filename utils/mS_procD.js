@@ -1,6 +1,7 @@
 var keyDict = {
     "ZA": "tourn", 
     "ZY": "country", 
+    "AA": "id",
     "AC": "status", 
     "AD": "startTime",
     "AE": "homeTeam", 
@@ -78,7 +79,7 @@ var matchCount;
 
 
 function processData(rawData, sportName) {
-    var splitData = rawData.match(/¬(~ZA|~AA|A[C-HJKMO]|B[A-LX]|W[A-C])÷(.+?)(?=¬)/g);
+    var splitData = rawData.match(/¬(~ZA|~AA|A[AC-HJKMO]|B[A-LX]|W[A-C])÷(.+?)(?=¬)/g);
     
     oD = {};
     currentCountry = "";
