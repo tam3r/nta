@@ -85,7 +85,7 @@ function processData(rawData, sportName) {
     currentCountry = "";
     currentTournament = "";
     currentEvent = 0;
-    currentTime = (new Date()).getTime();
+    currentTime = Date.now();
     matchCount = 0;
     
     if (splitData !== null) {    
