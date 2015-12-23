@@ -79,7 +79,7 @@ var matchCount;
 
 
 function processData(rawData, sportName) {
-    var splitData = rawData.match(/¬(~ZA|~AA|A[C-HJKMO]|B[A-LX]|W[A-C])÷(.+?)(?=¬)/g);
+    var splitData = rawData.match(/¬(~ZA|~AA|A[C-HJKMO]|B[A-LX]|W[A-C])÷(.*?)(?=¬)/g);
     
     oD = {};
     currentCountry = "";
