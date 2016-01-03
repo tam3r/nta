@@ -69,7 +69,13 @@ var settings = {
     "timeToStart": 60, //minutes until match start to add a match to results
     "timeSinceStart": 180, //minutes after their start ended matches are deleted from results 
     "timeUntilERO": 5 //minutes after start time a match is considered end-result only
-}
+};
+
+var filter = {
+    events: checkPreviousEvent,
+    tournaments: checkPreviousTournament,
+    countries: checkCountries
+};
 
 var oD; //output
 var currentCountry;
@@ -91,9 +97,9 @@ function processData(rawData, sportName) {
     
     if (splitData !== null) {    
         splitData.forEach(propr2Json);
-        checkPreviousEvent(); //remove last event if necessary
-        checkPreviousTournament(); //remove last tournament if empty
-        checkCountries(); //remove all countries without matches
+        filter.events(); //remove last event if necessary
+        filter.tournaments(); //remove last tournament if empty
+        filter.countries(); //remove all countries without matches
     } 
     
     oD.matchCount = matchCount;
@@ -103,9 +109,9 @@ function processData(rawData, sportName) {
 
 function propr2Json(item) {
     if (item.match(/~ZA/)) {    //ZA means new tournament
-        checkPreviousEvent();
-        checkPreviousTournament();
         var delimPos = item.indexOf(":");
+        
+        filter.events(), filter.tournaments();
         
         currentCountry = item.slice(5, delimPos);
         currentTournament = item.slice(delimPos + 1).trimLeft();
@@ -117,7 +123,7 @@ function propr2Json(item) {
         oD[currentCountry][currentTournament] = [];
         
     } else if (item.match(/~AA/)) { //AA means new event
-       	checkPreviousEvent();
+       	filter.events();
         currentEvent++;
         matchCount++;
         oD[currentCountry][currentTournament].push({id: item.slice(5)});
@@ -125,6 +131,71 @@ function propr2Json(item) {
     } else {
         setProp(item);
     }
+}
+
+
+function setProp(propStr) {
+    var rawName = propStr.slice(1, 3);
+    var rawValue = propStr.slice(4);
+    var propName = keyDict[rawName];
+    var propValue = rawValue;
+    var target = oD[currentCountry][currentTournament][currentEvent];
+    
+    if (!target.hasOwnProperty(propName)) 
+        target[propName] = propValue; 
+        
+    switch (propName) {
+        case "status":
+            target.statusTxt = statDict[rawValue];
+            break;
+        case "startTime":   
+            target[propName] *= 1000;
+            break;
+        case "statusUpdateTime":      
+            var timeSinceUpdate = currentTime - target[propName] * 1000;
+            target[propName] *= 1000;
+            target['sinceUpdateM'] = Math.ceil(timeSinceUpdate / 60000);
+            break;
+        case "score":
+        case "scoreParts":
+            setScore(rawName, rawValue);
+            break;
+        default:
+    }
+}
+
+
+function setScore(keyName, keyValue) {
+    var props = whatScore(keyName); 
+    var target = oD[currentCountry][currentTournament][currentEvent];
+    
+    if (typeof props[1] === "undefined") {
+        if (typeof target.score !== "object")
+            target.score = {};
+            
+        target.score[props[0]] = keyValue;
+    } else {
+        if (typeof target.scoreParts !== "object") 
+            target.scoreParts = [];
+            
+        if (typeof target.scoreParts[props[1]] === "undefined") 
+            target.scoreParts[props[1]] = {};
+            
+        target.scoreParts[props[1]][props[0]] = keyValue;
+    }
+}
+
+
+function whatScore(keyName) { //returns [side] or [side, part], side = "home"/"away", part = 0..6
+    var out = [];
+    var firstLetter = keyName.charAt(0);
+    var secondLetterUnicode = keyName.charCodeAt(1);
+    
+    out[0] = secondLetterUnicode % 2 === 0 ? "away" : "home"; 
+    if (firstLetter === "B") 
+        out[1] = (secondLetterUnicode - 65) >> 1;
+        
+    return out;
 }
 
 
@@ -172,67 +243,6 @@ function checkCountries() {
     for (country in oD)
         if (Object.keys(oD[country]).length === 0)
             delete oD[country];
-}
-
-
-function setProp(propStr) {
-    var rawName = propStr.slice(1, 3);
-    var rawValue = propStr.slice(4);
-    var propName = keyDict[rawName];
-    var propValue = rawValue;
-    var target = oD[currentCountry][currentTournament][currentEvent];
-    
-    if (!target.hasOwnProperty(propName)) 
-        target[propName] = propValue; 
-        
-    switch (propName) {
-        case "status":
-            target.statusTxt = statDict[rawValue];
-            break;
-        case "startTime":  
-        case "statusUpdateTime":      
-            target[propName] *= 1000;
-            break;
-        case "score":
-        case "scoreParts":
-            setScore(rawName, rawValue);
-            break;
-        default:
-    }
-}
-
-
-function setScore(keyName, keyValue) {
-    var props = whatScore(keyName); 
-    var target = oD[currentCountry][currentTournament][currentEvent];
-    
-    if (typeof props[1] === "undefined") {
-        if (typeof target.score !== "object")
-            target.score = {};
-            
-        target.score[props[0]] = keyValue;
-    } else {
-        if (typeof target.scoreParts !== "object") 
-            target.scoreParts = [];
-            
-        if (typeof target.scoreParts[props[1]] === "undefined") 
-            target.scoreParts[props[1]] = {};
-            
-        target.scoreParts[props[1]][props[0]] = keyValue;
-    }
-}
-
-
-function whatScore(keyName) { //returns [side] or [side, part], side = "home"/"away", part = 0..6
-    var out = [];
-    var firstLetter = keyName.charAt(0);
-    var secondLetterUnicode = keyName.charCodeAt(1);
-    
-    out[0] = secondLetterUnicode % 2 === 0 ? "away" : "home"; 
-    if (firstLetter === "B") 
-        out[1] = (secondLetterUnicode - 65) >> 1;
-        
-    return out;
 }
 
 
