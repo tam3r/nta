@@ -153,8 +153,9 @@ function setProp(propStr) {
             target[propName] *= 1000;
             break;
         case "statusUpdateTime":      
-            var timeSinceUpdate = currentTime - target[propName] * 1000;
+            var timeSinceUpdate;
             target[propName] *= 1000;
+            timeSinceUpdate = currentTime - target[propName];
             target['sinceUpdateM'] = Math.ceil(timeSinceUpdate / 60000);
             break;
         case "score":
