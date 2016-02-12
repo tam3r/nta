@@ -1,12 +1,12 @@
-var KTGetXMLData = require('./utils/yaFeed');
-var myScoreData  = require('./utils/mS_getD');
-var express      = require('express');
-var request      = require('request');
+var KTGetXMLData = require('./utils/yaFeed'),
+    myScoreData  = require('./utils/mS_getD'),
+    express      = require('express'),
+    request      = require('request');
 
-var app = express();
-var port = process.env.PORT || 1337; 
-
-var yandexSportFeed = new KTGetXMLData('http://news.yandex.ru/sport.rss');
+var app = express(),
+    port = process.env.PORT || 1337,
+    yandexSportFeed = new KTGetXMLData('http://news.yandex.ru/sport.rss');
+    
 myScoreData.getData();
 
 setInterval(function renewData() {
@@ -19,11 +19,11 @@ setInterval(function renewData(){
 
 app.get('/app/news', function ya_sport(req, res) {
   res.jsonp({"data": yandexSportFeed.data, "hasNews": yandexSportFeed.hasNews});
-})
+});
 
 app.get('/app/live', function live_data(req, res) {
   res.jsonp(myScoreData.liveData);
-})
+});
 
 app.listen(port);
 

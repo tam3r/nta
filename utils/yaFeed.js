@@ -1,10 +1,11 @@
-var parseString = require('xml2js').parseString;
-var request = require('request');
+var parseString = require('xml2js').parseString,
+    request = require('request');
 
 
 function compareDates(a, b) {
-    var first = new Date(a.pubDate);
-    var second = new Date(b.pubDate)
+    var first = new Date(a.pubDate),
+        second = new Date(b.pubDate);
+    
     return second - first;
 }
    
@@ -40,7 +41,7 @@ function processData(obj, callback) {
                         
                         delete item.guid;
                         delete item.link;
-                    })
+                    });
                 }
             );
         } else {
