@@ -24,7 +24,7 @@ function initOut() {
 
 function getData(sportName) {
     var reqOptions = {
-        url: 'http://d.myscore.ru/x/feed/f_' + sportsDict[sportName] + '_0_3_ru_1',
+        url: 'http://d.myscore1.ru/x/feed/f_' + sportsDict[sportName] + '_0_3_ru_1',
         headers: {"X-Fsign":"SW9D1eZo"}
     };
     
