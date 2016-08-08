@@ -25,7 +25,7 @@ app.get('/app/live', function live_data(req, res) {
   res.jsonp(myScoreData.liveData);
 });
 
-app.get('/app/line', function live_data(req, res) {
+app.get('/app/feed/all', function live_data(req, res) {
   res.jsonp(myScoreData.allData);
 });
 
