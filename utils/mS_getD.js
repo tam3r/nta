@@ -9,7 +9,8 @@ var sportsDict = {
     "volleyball": "12"
 };
 
-var out = initOut();
+var outLive = initOut();
+var outAll = initOut();
 
 
 function initOut() {
@@ -24,13 +25,14 @@ function initOut() {
 
 function getData(sportName) {
     var reqOptions = {
-        url: 'http://d.myscore.ru/x/feed/f_' + sportsDict[sportName] + '_0_3_ru_1',
+        url: 'http://d.scoreboard.com/ru/x/feed/f_' + sportsDict[sportName] + '_0_3_ru_1',
         headers: {"X-Fsign":"SW9D1eZo"}
     };
     
     request(reqOptions, function then(error, response, body) {
         if (!error && response.statusCode == 200) {
-            out[sportName] = processData(body, sportName);
+            outLive[sportName] = processData(body).live;
+            outAll[sportName] = processData(body).all;
             
         } else console.log(error)
     });
@@ -43,4 +45,5 @@ function getDataAll() {
 
 
 module.exports.getData = getDataAll;
-module.exports.liveData = out; 
+module.exports.liveData = outLive; 
+module.exports.allData = outAll; 

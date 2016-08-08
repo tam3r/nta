@@ -15,7 +15,7 @@ setInterval(function renewData() {
 
 setInterval(function renewData(){
   myScoreData.getData();
- }, 1000*60);
+ }, 1000*30);
 
 app.get('/app/news', function ya_sport(req, res) {
   res.jsonp({"data": yandexSportFeed.data, "hasNews": yandexSportFeed.hasNews});
@@ -23,6 +23,10 @@ app.get('/app/news', function ya_sport(req, res) {
 
 app.get('/app/live', function live_data(req, res) {
   res.jsonp(myScoreData.liveData);
+});
+
+app.get('/app/line', function live_data(req, res) {
+  res.jsonp(myScoreData.allData);
 });
 
 app.listen(port);

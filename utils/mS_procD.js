@@ -79,7 +79,9 @@ var keyDict = {
         countries: checkCountries
     },
 
-    oD, //output
+    output,
+    outAll,
+    outLive, //output
     currentCountry,
     currentTournament,
     currentEvent,
@@ -87,25 +89,30 @@ var keyDict = {
     matchCount;
 
 
-function processData(rawData, sportName) {
+function processData(rawData) {
     var splitData = rawData.match(/¬(~ZA|~AA|A[C-HJKMO]|B[A-LX]|W[A-C])÷(.*?)(?=¬)/g);
     
-    oD = {};
+    output = {};
+    outUnfiltered = {};
+    outLive = {};
     currentCountry = "";
     currentTournament = "";
-    currentEvent = 0;
+    currentEvent = -1;
     currentTime = Date.now();
     matchCount = 0;
     
     if (splitData !== null) {    
         splitData.forEach(propr2Json);
+        syncUnfiltered();
         filter.events(); //remove last event if necessary
         filter.tournaments(); //remove last tournament if empty
         filter.countries(); //remove all countries without matches
     } 
     
-    oD.matchCount = matchCount;
-    return oD;
+    outLive.matchCount = matchCount;
+    output.live = outLive;
+    output.all = outUnfiltered;
+    return output;
 }
 
 
@@ -113,22 +120,27 @@ function propr2Json(item) {
     if (item.match(/~ZA/)) {    //ZA means new tournament
         var delimPos = item.indexOf(":");
         
+        syncUnfiltered();        
         filter.events(), filter.tournaments();
         
         currentCountry = item.slice(5, delimPos);
         currentTournament = item.slice(delimPos + 1).trimLeft();
         currentEvent = -1;
                      
-        if (oD.hasOwnProperty(currentCountry) === false)
-            oD[currentCountry] = {};
+        if (outLive.hasOwnProperty(currentCountry) === false) {
+            outLive[currentCountry] = {};
+            outUnfiltered[currentCountry] = {};
+        }
             
-        oD[currentCountry][currentTournament] = [];
+        outLive[currentCountry][currentTournament] = [];
+        outUnfiltered[currentCountry][currentTournament] = [];
         
     } else if (item.match(/~AA/)) { //AA means new event
+        syncUnfiltered();
        	filter.events();
         currentEvent++;
         matchCount++;
-        oD[currentCountry][currentTournament].push({id: item.slice(5)});
+        outLive[currentCountry][currentTournament].push({id: item.slice(5)});
         
     } else {
         setProp(item);
@@ -141,7 +153,7 @@ function setProp(propStr) {
         rawValue = propStr.slice(4),
         propName = keyDict[rawName],
         propValue = rawValue,
-        target = oD[currentCountry][currentTournament][currentEvent];
+        target = outLive[currentCountry][currentTournament][currentEvent];
     
     if (!target.hasOwnProperty(propName)) 
         target[propName] = propValue; 
@@ -170,7 +182,7 @@ function setProp(propStr) {
 
 function setScore(keyName, keyValue) {
     var props = whatScore(keyName),
-        target = oD[currentCountry][currentTournament][currentEvent];
+        target = outLive[currentCountry][currentTournament][currentEvent];
     
     if (typeof props[1] === "undefined") {
         if (typeof target.score !== "object")
@@ -211,7 +223,7 @@ function checkPreviousEvent() {
     if (currentEvent === -1 || currentCountry === "") 
         return;
     
-    var event = oD[currentCountry][currentTournament][currentEvent],
+    var event = outLive[currentCountry][currentTournament][currentEvent],
         st = event.status,
         
         eventStart = (new Date(event.startTime)).getTime(),
@@ -228,7 +240,7 @@ function checkPreviousEvent() {
         notActual = (startTimeDiff > 0 && startTimeDiff > timeSinceStart && isNotLive);
     
     if (tooLongUntilStart || endResultOnly || notActual) {
-        oD[currentCountry][currentTournament].pop();
+        outLive[currentCountry][currentTournament].pop();
         currentEvent--;
         matchCount--;
     }
@@ -237,17 +249,28 @@ function checkPreviousEvent() {
 
 function checkPreviousTournament() {
     if (currentTournament === "") return;
-    if (oD[currentCountry][currentTournament].length === 0)
-        delete oD[currentCountry][currentTournament];
+    if (outLive[currentCountry][currentTournament].length === 0)
+        delete outLive[currentCountry][currentTournament];
 }
 
 
 function checkCountries() {
     var country;
     
-    for (country in oD)
-        if (Object.keys(oD[country]).length === 0)
-            delete oD[country];
+    for (country in outLive)
+        if (Object.keys(outLive[country]).length === 0)
+            delete outLive[country];
+}
+
+
+function syncUnfiltered() {
+    if (currentEvent >= 0) {
+        var tempID = outLive[currentCountry][currentTournament].length,
+            target = outUnfiltered[currentCountry][currentTournament],
+            eventObj = JSON.parse(JSON.stringify(outLive[currentCountry][currentTournament][tempID - 1]));
+
+        target.push(eventObj);
+    }
 }
 
 
