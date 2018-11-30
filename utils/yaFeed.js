@@ -43,6 +43,7 @@ function processData(obj, callback) {
                             delete item.link;
                         });
                     } catch(error) {
+                        obj.hasNews = false;
                         obj.data = ["Ошибка загрузки новостей\n"];
                     }
                 }
