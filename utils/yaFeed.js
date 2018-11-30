@@ -31,17 +31,20 @@ function processData(obj, callback) {
             
             parseString(body, {explicitArray: false, ignoreAttrs: true}, 
                 function(err, result) {
-                    
-                    obj.hasNews = true;
-                    obj.data = result.rss.channel.item;
-                    obj.data.sort(compareDates);
-                    obj.data.forEach(function normalise(item) {
-                        var dateSrc = new Date(item.pubDate);
-                        item.pubDate = dateSrc.getTime();
-                        
-                        delete item.guid;
-                        delete item.link;
-                    });
+                    try {
+                        obj.hasNews = true;
+                        obj.data = result.rss.channel.item;
+                        obj.data.sort(compareDates);
+                        obj.data.forEach(function normalise(item) {
+                            var dateSrc = new Date(item.pubDate);
+                            item.pubDate = dateSrc.getTime();
+
+                            delete item.guid;
+                            delete item.link;
+                        });
+                    } catch(error) {
+                        obj.data = ["Ошибка загрузки новостей\n"];
+                    }
                 }
             );
         } else {
