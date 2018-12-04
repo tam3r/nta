@@ -28,6 +28,10 @@ function processData(obj, callback) {
     request.get(obj.source, function (error, response, body) {
         
         if (!error && response.statusCode == 200) {
+            if (typeof body === 'string') {
+                var rssStart = body.indexOf('<rss version="2.0">');
+                body = body.slice(rssStart);
+            }            
             
             parseString(body, {explicitArray: false, ignoreAttrs: true}, 
                 function(err, result) {
